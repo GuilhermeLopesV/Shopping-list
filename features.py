@@ -1,29 +1,23 @@
-shopping_list = []
-
-while True:
-    print('-' * 30)
-    print('Selecione uma opção')
-    option = input('[I]nserir [A]pagar [L]istar [E]ncerrar: ').upper()
-
+def command_terminal(option, items):
     if option == 'I':
         value = input('Valor para adiciona a lista: ').strip().capitalize()
         if value:
-            shopping_list.append(value)
+            items.append(value)
         else:
             print('Não é possível adicionar valor vazio')
 
     elif option == 'A':
-        if not shopping_list:
+        if not items:
             print('Lista vazia')
-            continue
+            return
 
-        for i, val in enumerate(shopping_list):
+        for i, val in enumerate(items):
             print(i, val)
 
         indice_str = input('Escolha o índice para apagar: ')
         try:
             indice = int(indice_str)
-            item_removed = shopping_list.pop(indice)
+            item_removed = items.pop(indice)
             print(f'Item "{item_removed}" foi removido da lista.')
 
         except ValueError:
@@ -32,12 +26,9 @@ while True:
             print('Esse índice não existe')
 
     elif option == 'L':
-        if not shopping_list:
+        if not items:
             print('Lista vazia')
 
-        for i, value in enumerate(shopping_list):
+        for i, value in enumerate(items, start=1):
             print(i, value)
 
-    elif option == 'E':
-        print('Programa finalizado')
-        break

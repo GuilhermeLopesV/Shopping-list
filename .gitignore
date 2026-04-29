@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Ambientes virtuais
+.env
+.venv/
+venv/
+
+# IDEs
+.idea/
+.vscode/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Notas pessoais
+notes/
