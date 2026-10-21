@@ -10,11 +10,16 @@ from package_data.data_features import save_data, load_data
 class TestShoppingListData(unittest.TestCase):
 
     def test_save_data(self):
+        items = [
+            {'nome': 'Arroz', 'quantidade': 2},
+            {'nome': 'Feijão', 'quantidade': 1}
+        ]
+
         with tempfile.TemporaryDirectory() as temp_dir:
             test_file = Path(temp_dir) / 'history.json'
 
             with patch('package_data.data_features.FILE_PATH', test_file):
-                result = save_data(['Arroz', 'Feijão'])
+                result = save_data(items)
 
             self.assertTrue(result)
             self.assertTrue(test_file.exists())
@@ -22,22 +27,43 @@ class TestShoppingListData(unittest.TestCase):
             with open(test_file, 'r', encoding='utf-8') as file:
                 data = json.load(file)
 
-            self.assertEqual(data['history'], ['Arroz', 'Feijão'])
+            self.assertEqual(data['history'], items)
 
     def test_load_data(self):
+        expected = [
+            {'nome': 'Arroz', 'quantidade': 2},
+            {'nome': 'Feijão', 'quantidade': 1}
+        ]
+
         with tempfile.TemporaryDirectory() as temp_dir:
             test_file = Path(temp_dir) / 'history.json'
 
             with open(test_file, 'w', encoding='utf-8') as file:
-                json.dump(
-                    {'history': ['Arroz', 'Feijão']},
-                    file
-                )
+                json.dump({'history': expected}, file)
 
             with patch('package_data.data_features.FILE_PATH', test_file):
                 result = load_data()
 
-            self.assertEqual(result, ['Arroz', 'Feijão'])
+            self.assertEqual(result, expected)
+
+    def test_load_legacy_data(self):
+        legacy_items = ['Arroz', 'Feijão']
+
+        expected = [
+            {'nome': 'Arroz', 'quantidade': 1},
+            {'nome': 'Feijão', 'quantidade': 1}
+        ]
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            test_file = Path(temp_dir) / 'history.json'
+
+            with open(test_file, 'w', encoding='utf-8') as file:
+                json.dump({'history': legacy_items}, file)
+
+            with patch('package_data.data_features.FILE_PATH', test_file):
+                result = load_data()
+
+            self.assertEqual(result, expected)
 
     def test_load_missing_file(self):
         with tempfile.TemporaryDirectory() as temp_dir:

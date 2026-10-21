@@ -11,11 +11,14 @@ class TestShoppingList(unittest.TestCase):
     def test_add_item(self):
         items = []
 
-        with patch('builtins.input', return_value='arroz'):
+        with patch('builtins.input', side_effect=['arroz', '2']):
             result = add_item(items)
 
         self.assertTrue(result)
-        self.assertEqual(items, ['Arroz'])
+        self.assertEqual(
+            items,
+            [{'nome': 'Arroz', 'quantidade': 2}]
+        )
 
     def test_add_empty_item(self):
         items = []
@@ -26,41 +29,78 @@ class TestShoppingList(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(items, [])
 
+    def test_add_invalid_quantity(self):
+        items = []
+
+        with patch('builtins.input', side_effect=['Arroz', '0']):
+            result = add_item(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items, [])
+
+    def test_add_non_numeric_quantity(self):
+        items = []
+
+        with patch('builtins.input', side_effect=['Arroz', 'abc']):
+            result = add_item(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items, [])
+
     def test_remove_item(self):
-        items = ['Arroz', 'Feijão', 'Leite']
+        items = [
+            {'nome': 'Arroz', 'quantidade': 2},
+            {'nome': 'Feijão', 'quantidade': 1},
+            {'nome': 'Leite', 'quantidade': 3}
+        ]
 
         with patch('builtins.input', return_value='2'):
             result = remove_item(items)
 
         self.assertTrue(result)
-        self.assertEqual(items, ['Arroz', 'Leite'])
+        self.assertEqual(
+            items,
+            [
+                {'nome': 'Arroz', 'quantidade': 2},
+                {'nome': 'Leite', 'quantidade': 3}
+            ]
+        )
 
     def test_remove_invalid_index(self):
-        items = ['Arroz', 'Feijão']
+        items = [
+            {'nome': 'Arroz', 'quantidade': 2},
+            {'nome': 'Feijão', 'quantidade': 1}
+        ]
 
         with patch('builtins.input', return_value='10'):
             result = remove_item(items)
 
         self.assertFalse(result)
-        self.assertEqual(items, ['Arroz', 'Feijão'])
+        self.assertEqual(len(items), 2)
 
     def test_list_items(self):
-        items = ['Arroz', 'Feijão']
+        items = [
+            {'nome': 'Arroz', 'quantidade': 2},
+            {'nome': 'Feijão', 'quantidade': 1}
+        ]
+
         output = StringIO()
 
         with redirect_stdout(output):
             list_items(items)
 
         self.assertIn('1. Arroz', output.getvalue())
+        self.assertIn('Quantidade: 2', output.getvalue())
         self.assertIn('2. Feijão', output.getvalue())
+        self.assertIn('Quantidade: 1', output.getvalue())
 
     def test_invalid_option(self):
-        items = ['Arroz']
+        items = [{'nome': 'Arroz', 'quantidade': 1}]
 
         result = command_terminal('X', items)
 
         self.assertFalse(result)
-        self.assertEqual(items, ['Arroz'])
+        self.assertEqual(len(items), 1)
 
 
 if __name__ == '__main__':
