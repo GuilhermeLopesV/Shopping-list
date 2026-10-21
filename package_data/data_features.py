@@ -1,22 +1,46 @@
 import json
-import os
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(__file__)
-FILE_PATH = os.path.join(BASE_DIR, "history.json")
+BASE_DIR = Path(__file__).resolve().parent
+FILE_PATH = BASE_DIR / 'history.json'
 
 
-def save_data(results):
+def save_data(items):
     data = {
-        'history': results,
+        'history': items
     }
-    with open(FILE_PATH, "w") as arquivo:
-        json.dump(data, arquivo, indent=4)
+
+    try:
+        with open(FILE_PATH, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+
+        return True
+
+    except OSError:
+        print('Erro ao salvar os dados da lista.')
+        return False
 
 
 def load_data():
     try:
-        with open(FILE_PATH, "r") as arquivo:
-            data = json.load(arquivo)
-        return data.get('history', [])
+        with open(FILE_PATH, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
     except FileNotFoundError:
         return []
+
+    except json.JSONDecodeError:
+        print('O arquivo de dados está inválido. Iniciando uma lista vazia.')
+        return []
+
+    except OSError:
+        print('Erro ao ler os dados. Iniciando uma lista vazia.')
+        return []
+
+    history = data.get('history', [])
+
+    if not isinstance(history, list):
+        print('Formato de dados inválido. Iniciando uma lista vazia.')
+        return []
+
+    return [item for item in history if isinstance(item, str)]

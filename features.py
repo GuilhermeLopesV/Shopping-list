@@ -1,34 +1,59 @@
+def add_item(items):
+    value = input('Produto para adicionar: ').strip()
+
+    if not value:
+        print('Não é possível adicionar um produto vazio.')
+        return False
+
+    items.append(value.capitalize())
+    print(f'Produto "{value.capitalize()}" adicionado com sucesso.')
+
+    return True
+
+
+def remove_item(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return False
+
+    list_items(items)
+
+    try:
+        index = int(input('Digite o número do produto para remover: '))
+        item_removed = items.pop(index - 1)
+
+        print(f'Produto "{item_removed}" removido com sucesso.')
+        return True
+
+    except ValueError:
+        print('Digite um número inteiro válido.')
+    except IndexError:
+        print('Esse número não corresponde a um produto da lista.')
+
+    return False
+
+
+def list_items(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return
+
+    print('\n--- SUA LISTA DE COMPRAS ---')
+
+    for index, item in enumerate(items, start=1):
+        print(f'{index}. {item}')
+
+    print('-' * 30)
+
+
 def command_terminal(option, items):
     if option == 'I':
-        value = input('Valor para adiciona a lista: ').strip().capitalize()
-        if value:
-            items.append(value)
-        else:
-            print('Não é possível adicionar valor vazio')
+        return add_item(items)
 
     elif option == 'A':
-        if not items:
-            print('Lista vazia')
-            return
-
-        for i, val in enumerate(items):
-            print(i, val)
-
-        indice_str = input('Escolha o índice para apagar: ')
-        try:
-            indice = int(indice_str)
-            item_removed = items.pop(indice)
-            print(f'Item "{item_removed}" foi removido da lista.')
-
-        except ValueError:
-            print('Por favor digite somente número int')
-        except IndexError:
-            print('Esse índice não existe')
+        return remove_item(items)
 
     elif option == 'L':
-        if not items:
-            print('Lista vazia')
+        list_items(items)
 
-        for i, value in enumerate(items, start=1):
-            print(i, value)
-
+    return False

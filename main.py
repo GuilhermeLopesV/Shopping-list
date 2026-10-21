@@ -3,19 +3,32 @@ from package_data.data_features import load_data, save_data
 
 
 def shopping_list_manager():
-    shopping_list = list(load_data())
+    shopping_list = load_data()
 
     while True:
+        print('\n' + '-' * 30)
+        print('       LISTA DE COMPRAS')
         print('-' * 30)
-        print('Selecione uma opção')
-        option = input('[I]nserir [A]pagar [L]istar [E]ncerrar: ').upper()
+        print('[I] Inserir produto')
+        print('[A] Apagar produto')
+        print('[L] Listar produtos')
+        print('[E] Encerrar programa')
 
-        command_terminal(option, shopping_list)
-
-        save_data(shopping_list)
+        option = input('Escolha uma opção: ').strip().upper()
 
         if option == 'E':
-            print('Programa finalizado')
+            print('Programa finalizado.')
             break
 
-shopping_list_manager()
+        if option not in {'I', 'A', 'L'}:
+            print('Opção inválida. Tente novamente.')
+            continue
+
+        changed = command_terminal(option, shopping_list)
+
+        if changed:
+            save_data(shopping_list)
+
+
+if __name__ == '__main__':
+    shopping_list_manager()
