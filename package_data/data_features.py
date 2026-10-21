@@ -37,10 +37,38 @@ def load_data():
         print('Erro ao ler os dados. Iniciando uma lista vazia.')
         return []
 
-    history = data.get('history', [])
+    history = data.get('history', []) if isinstance(data, dict) else None
 
     if not isinstance(history, list):
         print('Formato de dados inválido. Iniciando uma lista vazia.')
         return []
 
-    return [item for item in history if isinstance(item, str)]
+    items = []
+
+    for item in history:
+        if isinstance(item, str):
+            name = item.strip()
+
+            if name:
+                items.append({
+                    'nome': name,
+                    'quantidade': 1
+                })
+
+        elif isinstance(item, dict):
+            name = item.get('nome')
+            quantity = item.get('quantidade')
+
+            if (
+                isinstance(name, str)
+                and name.strip()
+                and isinstance(quantity, int)
+                and not isinstance(quantity, bool)
+                and quantity > 0
+            ):
+                items.append({
+                    'nome': name.strip(),
+                    'quantidade': quantity
+                })
+
+    return items

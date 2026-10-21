@@ -1,12 +1,32 @@
 def add_item(items):
-    value = input('Produto para adicionar: ').strip()
+    name = input('Produto para adicionar: ').strip()
 
-    if not value:
+    if not name:
         print('Não é possível adicionar um produto vazio.')
         return False
 
-    items.append(value.capitalize())
-    print(f'Produto "{value.capitalize()}" adicionado com sucesso.')
+    try:
+        quantity = int(input('Quantidade do produto: '))
+
+        if quantity <= 0:
+            print('A quantidade deve ser maior que zero.')
+            return False
+
+    except ValueError:
+        print('Digite uma quantidade inteira válida.')
+        return False
+
+    item = {
+        'nome': name.capitalize(),
+        'quantidade': quantity
+    }
+
+    items.append(item)
+
+    print(
+        f'Produto "{item["nome"]}" adicionado '
+        f'com quantidade {quantity}.'
+    )
 
     return True
 
@@ -20,17 +40,19 @@ def remove_item(items):
 
     try:
         index = int(input('Digite o número do produto para remover: '))
+
+        if index < 1 or index > len(items):
+            print('Esse número não corresponde a um produto da lista.')
+            return False
+
         item_removed = items.pop(index - 1)
 
-        print(f'Produto "{item_removed}" removido com sucesso.')
+        print(f'Produto "{item_removed["nome"]}" removido com sucesso.')
         return True
 
     except ValueError:
         print('Digite um número inteiro válido.')
-    except IndexError:
-        print('Esse número não corresponde a um produto da lista.')
-
-    return False
+        return False
 
 
 def list_items(items):
@@ -41,7 +63,10 @@ def list_items(items):
     print('\n--- SUA LISTA DE COMPRAS ---')
 
     for index, item in enumerate(items, start=1):
-        print(f'{index}. {item}')
+        print(
+            f'{index}. {item["nome"]} '
+            f'- Quantidade: {item["quantidade"]}'
+        )
 
     print('-' * 30)
 
