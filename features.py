@@ -18,7 +18,8 @@ def add_item(items):
 
     item = {
         'nome': name.capitalize(),
-        'quantidade': quantity
+        'quantidade': quantity,
+        'comprado': False
     }
 
     items.append(item)
@@ -93,6 +94,34 @@ def edit_quantity(items):
         return False
 
 
+def toggle_purchased(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return False
+
+    list_items(items)
+
+    try:
+        index = int(input('Digite o número do produto: '))
+
+        if index < 1 or index > len(items):
+            print('Esse número não corresponde a um produto da lista.')
+            return False
+
+        item = items[index - 1]
+        item['comprado'] = not item['comprado']
+
+        status = 'comprado' if item['comprado'] else 'pendente'
+
+        print(f'"{item["nome"]}" marcado como {status}.')
+
+        return True
+
+    except ValueError:
+        print('Digite um número inteiro válido.')
+        return False
+
+
 
 def list_items(items):
     if not items:
@@ -102,9 +131,12 @@ def list_items(items):
     print('\n--- SUA LISTA DE COMPRAS ---')
 
     for index, item in enumerate(items, start=1):
+        status = 'Comprado' if item['comprado'] else 'Pendente'
+
         print(
             f'{index}. {item["nome"]} '
-            f'- Quantidade: {item["quantidade"]}'
+            f'- Quantidade: {item["quantidade"]} '
+            f'- {status}'
         )
 
     print('-' * 30)
@@ -120,7 +152,11 @@ def command_terminal(option, items):
     elif option == 'Q':
         return edit_quantity(items)
 
+    elif option == 'M':
+        return toggle_purchased(items)
+
     elif option == 'L':
         list_items(items)
 
     return False
+

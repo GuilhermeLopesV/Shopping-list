@@ -45,6 +45,7 @@ def load_data():
 
     items = []
 
+
     for item in history:
         if isinstance(item, str):
             name = item.strip()
@@ -52,12 +53,14 @@ def load_data():
             if name:
                 items.append({
                     'nome': name,
-                    'quantidade': 1
+                    'quantidade': 1,
+                    'comprado': False
                 })
 
         elif isinstance(item, dict):
             name = item.get('nome')
             quantity = item.get('quantidade')
+            purchased = item.get('comprado', False)
 
             if (
                 isinstance(name, str)
@@ -65,10 +68,12 @@ def load_data():
                 and isinstance(quantity, int)
                 and not isinstance(quantity, bool)
                 and quantity > 0
+                and isinstance(purchased, bool)
             ):
                 items.append({
                     'nome': name.strip(),
-                    'quantidade': quantity
+                    'quantidade': quantity,
+                    'comprado': purchased
                 })
 
     return items
