@@ -55,6 +55,45 @@ def remove_item(items):
         return False
 
 
+
+def edit_quantity(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return False
+
+    list_items(items)
+
+    try:
+        index = int(input('Digite o número do produto: '))
+
+        if index < 1 or index > len(items):
+            print('Esse número não corresponde a um produto da lista.')
+            return False
+
+        item = items[index - 1]
+
+        quantity = int(input('Digite a nova quantidade: '))
+
+        if quantity <= 0:
+            print('A quantidade deve ser maior que zero.')
+            return False
+
+        old_quantity = item['quantidade']
+        item['quantidade'] = quantity
+
+        print(
+            f'Quantidade de "{item["nome"]}" atualizada '
+            f'de {old_quantity} para {quantity}.'
+        )
+
+        return True
+
+    except ValueError:
+        print('Digite um número inteiro válido.')
+        return False
+
+
+
 def list_items(items):
     if not items:
         print('Sua lista está vazia.')
@@ -77,6 +116,9 @@ def command_terminal(option, items):
 
     elif option == 'A':
         return remove_item(items)
+
+    elif option == 'Q':
+        return edit_quantity(items)
 
     elif option == 'L':
         list_items(items)

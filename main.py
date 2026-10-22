@@ -12,6 +12,7 @@ def shopping_list_manager():
         print('[I] Inserir produto')
         print('[A] Apagar produto')
         print('[L] Listar produtos')
+        print('[Q] Editar quantidade')
         print('[E] Encerrar programa')
 
         option = input('Escolha uma opção: ').strip().upper()
@@ -20,7 +21,7 @@ def shopping_list_manager():
             print('Programa finalizado.')
             break
 
-        if option not in {'I', 'A', 'L'}:
+        if option not in {'I', 'A', 'L', 'Q'}:
             print('Opção inválida. Tente novamente.')
             continue
 

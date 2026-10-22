@@ -3,7 +3,7 @@ from unittest.mock import patch
 from io import StringIO
 from contextlib import redirect_stdout
 
-from features import add_item, remove_item, list_items, command_terminal
+from features import add_item, remove_item, edit_quantity, list_items, command_terminal
 
 
 class TestShoppingList(unittest.TestCase):
@@ -101,6 +101,41 @@ class TestShoppingList(unittest.TestCase):
 
         self.assertFalse(result)
         self.assertEqual(len(items), 1)
+
+    def test_edit_quantity(self):
+        items = [{'nome': 'Arroz', 'quantidade': 2}]
+
+        with patch('builtins.input', side_effect=['1', '5']):
+            result = edit_quantity(items)
+
+        self.assertTrue(result)
+        self.assertEqual(items[0]['quantidade'], 5)
+
+    def test_edit_quantity_invalid_index(self):
+        items = [{'nome': 'Arroz', 'quantidade': 2}]
+
+        with patch('builtins.input', return_value='10'):
+            result = edit_quantity(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items[0]['quantidade'], 2)
+
+    def test_edit_quantity_invalid_value(self):
+        items = [{'nome': 'Arroz', 'quantidade': 2}]
+
+        with patch('builtins.input', side_effect=['1', '0']):
+            result = edit_quantity(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items[0]['quantidade'], 2)
+
+    def test_edit_quantity_empty_list(self):
+        items = []
+
+        result = edit_quantity(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items, [])
 
 
 if __name__ == '__main__':
