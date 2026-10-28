@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -45,7 +46,6 @@ def load_data():
 
     items = []
 
-
     for item in history:
         if isinstance(item, str):
             name = item.strip()
@@ -54,13 +54,29 @@ def load_data():
                 items.append({
                     'nome': name,
                     'quantidade': 1,
-                    'comprado': False
+                    'comprado': False,
+                    'preco': '0.00'
                 })
 
         elif isinstance(item, dict):
             name = item.get('nome')
             quantity = item.get('quantidade')
             purchased = item.get('comprado', False)
+            price = item.get('preco', '0.00')
+
+            if isinstance(price, (int, float)) and not isinstance(price, bool):
+                price = str(price)
+
+            try:
+                valid_price = (
+                    isinstance(price, str)
+                    and price.strip() != ''
+                    and Decimal(price).is_finite()
+                    and Decimal(price) >= 0
+                    and Decimal(price).as_tuple().exponent >= -2
+                )
+            except InvalidOperation:
+                valid_price = False
 
             if (
                 isinstance(name, str)
@@ -69,11 +85,13 @@ def load_data():
                 and not isinstance(quantity, bool)
                 and quantity > 0
                 and isinstance(purchased, bool)
+                and valid_price
             ):
                 items.append({
                     'nome': name.strip(),
                     'quantidade': quantity,
-                    'comprado': purchased
+                    'comprado': purchased,
+                    'preco': str(Decimal(price))
                 })
 
     return items

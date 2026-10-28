@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 from io import StringIO
 from contextlib import redirect_stdout
+from decimal import Decimal
 
 from features import (
     add_item,
@@ -9,7 +10,8 @@ from features import (
     edit_quantity,
     toggle_purchased,
     list_items,
-    command_terminal
+    command_terminal,
+    calculate_total
 )
 
 
@@ -18,13 +20,21 @@ class TestShoppingList(unittest.TestCase):
     def test_add_item(self):
         items = []
 
-        with patch('builtins.input', side_effect=['arroz', '2']):
+        with patch(
+                'builtins.input',
+                side_effect=['arroz', '2', '25,90']
+        ):
             result = add_item(items)
 
         self.assertTrue(result)
         self.assertEqual(
             items,
-            [{'nome': 'Arroz', 'quantidade': 2, 'comprado': False}]
+            [{
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '25.90'
+            }]
         )
 
     def test_add_empty_item(self):
@@ -87,8 +97,18 @@ class TestShoppingList(unittest.TestCase):
 
     def test_list_items(self):
         items = [
-            {'nome': 'Arroz', 'quantidade': 2, 'comprado': False},
-            {'nome': 'Feijão', 'quantidade': 1, 'comprado': True}
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '25.90'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 3,
+                'comprado': True,
+                'preco': '8.50'
+            }
         ]
 
         output = StringIO()
@@ -96,12 +116,19 @@ class TestShoppingList(unittest.TestCase):
         with redirect_stdout(output):
             list_items(items)
 
-        self.assertIn('1. Arroz', output.getvalue())
-        self.assertIn('Quantidade: 2', output.getvalue())
-        self.assertIn('Pendente', output.getvalue())
-        self.assertIn('2. Feijão', output.getvalue())
-        self.assertIn('Quantidade: 1', output.getvalue())
-        self.assertIn('Comprado', output.getvalue())
+        result = output.getvalue()
+
+        self.assertIn('1. Arroz', result)
+        self.assertIn('Quantidade: 2', result)
+        self.assertIn('Preço unitário: R$ 25.90', result)
+        self.assertIn('Subtotal: R$ 51.80', result)
+        self.assertIn('Pendente', result)
+
+        self.assertIn('2. Feijão', result)
+        self.assertIn('Quantidade: 3', result)
+        self.assertIn('Preço unitário: R$ 8.50', result)
+        self.assertIn('Subtotal: R$ 25.50', result)
+        self.assertIn('Comprado', result)
 
     def test_invalid_option(self):
         items = [
@@ -195,6 +222,30 @@ class TestShoppingList(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(items, [])
 
+    def test_calculate_total(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '25.90'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 3,
+                'comprado': True,
+                'preco': '8.50'
+            }
+        ]
+
+        result = calculate_total(items)
+
+        self.assertEqual(result, Decimal('77.30'))
+
+    def test_calculate_total_empty_list(self):
+        result = calculate_total([])
+
+        self.assertEqual(result, Decimal('0.00'))
 
 if __name__ == '__main__':
     unittest.main()

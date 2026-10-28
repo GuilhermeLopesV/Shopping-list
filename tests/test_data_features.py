@@ -11,8 +11,18 @@ class TestShoppingListData(unittest.TestCase):
 
     def test_save_data(self):
         items = [
-            {'nome': 'Arroz', 'quantidade': 2, 'comprado': False},
-            {'nome': 'Feijão', 'quantidade': 1, 'comprado': True}
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '5.70'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            }
         ]
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -31,8 +41,18 @@ class TestShoppingListData(unittest.TestCase):
 
     def test_load_data(self):
         expected = [
-            {'nome': 'Arroz', 'quantidade': 2, 'comprado': False},
-            {'nome': 'Feijão', 'quantidade': 1, 'comprado': True}
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '0.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '0.00'
+            }
         ]
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -50,8 +70,18 @@ class TestShoppingListData(unittest.TestCase):
         legacy_items = ['Arroz', 'Feijão']
 
         expected = [
-            {'nome': 'Arroz', 'quantidade': 1, 'comprado': False},
-            {'nome': 'Feijão', 'quantidade': 1, 'comprado': False}
+            {
+                'nome': 'Arroz',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '0.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '0.00'
+            }
         ]
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -72,8 +102,18 @@ class TestShoppingListData(unittest.TestCase):
         ]
 
         expected = [
-            {'nome': 'Arroz', 'quantidade': 2, 'comprado': False},
-            {'nome': 'Feijão', 'quantidade': 1, 'comprado': False}
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '0.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '0.00'
+            }
         ]
 
         with tempfile.TemporaryDirectory() as temp_dir:

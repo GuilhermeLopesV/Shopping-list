@@ -1,3 +1,6 @@
+from decimal import Decimal, InvalidOperation
+
+
 def add_item(items):
     name = input('Produto para adicionar: ').strip()
 
@@ -16,17 +19,37 @@ def add_item(items):
         print('Digite uma quantidade inteira válida.')
         return False
 
+    try:
+        price_input = input('Preço unitário do produto (R$): ')
+        price_input = price_input.strip().replace(',', '.')
+
+        price = Decimal(price_input)
+
+        if not price.is_finite() or price < 0:
+            print('O preço deve ser um valor válido e não negativo.')
+            return False
+
+        if price.as_tuple().exponent < -2:
+            print('O preço deve ter no máximo duas casas decimais.')
+            return False
+
+    except InvalidOperation:
+        print('Digite um preço válido.')
+        return False
+
     item = {
         'nome': name.capitalize(),
         'quantidade': quantity,
-        'comprado': False
+        'comprado': False,
+        'preco': str(price)
     }
 
     items.append(item)
 
     print(
         f'Produto "{item["nome"]}" adicionado '
-        f'com quantidade {quantity}.'
+        f'com quantidade {quantity} e preço unitário '
+        f'R$ {price:.2f}.'
     )
 
     return True
@@ -122,7 +145,6 @@ def toggle_purchased(items):
         return False
 
 
-
 def list_items(items):
     if not items:
         print('Sua lista está vazia.')
@@ -133,12 +155,19 @@ def list_items(items):
     for index, item in enumerate(items, start=1):
         status = 'Comprado' if item['comprado'] else 'Pendente'
 
+        price = Decimal(item.get('preco', '0.00'))
+        subtotal = price * item['quantidade']
+
         print(
             f'{index}. {item["nome"]} '
             f'- Quantidade: {item["quantidade"]} '
+            f'- Preço unitário: R$ {price:.2f} '
+            f'- Subtotal: R$ {subtotal:.2f} '
             f'- {status}'
         )
 
+    print('-' * 30)
+    print(f'TOTAL GERAL: R$ {calculate_total(items):.2f}')
     print('-' * 30)
 
 
@@ -160,3 +189,13 @@ def command_terminal(option, items):
 
     return False
 
+
+def calculate_total(items):
+    total = Decimal('0.00')
+
+    for item in items:
+        price = Decimal(item.get('preco', '0.00'))
+        subtotal = price * item['quantidade']
+        total += subtotal
+
+    return total
