@@ -8,6 +8,7 @@ from features import (
     add_item,
     remove_item,
     edit_quantity,
+    edit_price,
     toggle_purchased,
     list_items,
     command_terminal,
@@ -177,6 +178,79 @@ class TestShoppingList(unittest.TestCase):
         items = []
 
         result = edit_quantity(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items, [])
+
+    def test_edit_price(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        with patch('builtins.input', side_effect=['1', '12,50']):
+            result = edit_price(items)
+
+        self.assertTrue(result)
+        self.assertEqual(items[0]['preco'], '12.50')
+        self.assertEqual(calculate_total(items), Decimal('25.00'))
+
+    def test_edit_price_invalid_index(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        with patch('builtins.input', return_value='10'):
+            result = edit_price(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items[0]['preco'], '10.00')
+
+    def test_edit_price_invalid_value(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        with patch('builtins.input', side_effect=['1', 'abc']):
+            result = edit_price(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items[0]['preco'], '10.00')
+
+    def test_edit_price_more_than_two_decimal_places(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        with patch('builtins.input', side_effect=['1', '12.555']):
+            result = edit_price(items)
+
+        self.assertFalse(result)
+        self.assertEqual(items[0]['preco'], '10.00')
+
+    def test_edit_price_empty_list(self):
+        items = []
+
+        result = edit_price(items)
 
         self.assertFalse(result)
         self.assertEqual(items, [])

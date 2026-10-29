@@ -117,6 +117,56 @@ def edit_quantity(items):
         return False
 
 
+
+def edit_price(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return False
+
+    list_items(items)
+
+    try:
+        index = int(input('Digite o número do produto: '))
+
+        if index < 1 or index > len(items):
+            print('Esse número não corresponde a um produto da lista.')
+            return False
+
+        item = items[index - 1]
+
+        price_input = input('Digite o novo preço unitário (R$): ')
+        price_input = price_input.strip().replace(',', '.')
+
+        try:
+            price = Decimal(price_input)
+
+            if not price.is_finite() or price < 0:
+                print('O preço deve ser válido e não negativo.')
+                return False
+
+            if price.as_tuple().exponent < -2:
+                print('O preço deve ter no máximo duas casas decimais.')
+                return False
+
+        except InvalidOperation:
+            print('Digite um preço válido.')
+            return False
+
+        old_price = Decimal(item.get('preco', '0.00'))
+        item['preco'] = str(price)
+
+        print(
+            f'Preço de "{item["nome"]}" atualizado '
+            f'de R$ {old_price:.2f} para R$ {price:.2f}.'
+        )
+
+        return True
+
+    except ValueError:
+        print('Digite um número inteiro válido.')
+        return False
+
+
 def toggle_purchased(items):
     if not items:
         print('Sua lista está vazia.')
@@ -180,6 +230,9 @@ def command_terminal(option, items):
 
     elif option == 'Q':
         return edit_quantity(items)
+
+    elif option == 'P':
+        return edit_price(items)
 
     elif option == 'M':
         return toggle_purchased(items)
