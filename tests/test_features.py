@@ -11,6 +11,7 @@ from features import (
     edit_price,
     toggle_purchased,
     list_items,
+    filter_items,
     command_terminal,
     calculate_total
 )
@@ -130,6 +131,137 @@ class TestShoppingList(unittest.TestCase):
         self.assertIn('Preço unitário: R$ 8.50', result)
         self.assertIn('Subtotal: R$ 25.50', result)
         self.assertIn('Comprado', result)
+
+
+    def test_filter_all_items(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            }
+        ]
+
+        output = StringIO()
+
+        with patch('builtins.input', return_value='T'):
+            with redirect_stdout(output):
+                filter_items(items)
+
+        result = output.getvalue()
+
+        self.assertIn('Arroz', result)
+        self.assertIn('Feijão', result)
+
+    def test_filter_pending_items(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            }
+        ]
+
+        output = StringIO()
+
+        with patch('builtins.input', return_value='P'):
+            with redirect_stdout(output):
+                filter_items(items)
+
+        result = output.getvalue()
+
+        self.assertIn('Arroz', result)
+        self.assertNotIn('Feijão', result)
+
+    def test_filter_purchased_items(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            }
+        ]
+
+        output = StringIO()
+
+        with patch('builtins.input', return_value='C'):
+            with redirect_stdout(output):
+                filter_items(items)
+
+        result = output.getvalue()
+
+        self.assertNotIn('Arroz', result)
+        self.assertIn('Feijão', result)
+
+    def test_filter_without_matching_items(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        output = StringIO()
+
+        with patch('builtins.input', return_value='C'):
+            with redirect_stdout(output):
+                filter_items(items)
+
+        self.assertIn(
+            'Nenhum produto encontrado para esse filtro.',
+            output.getvalue()
+        )
+
+    def test_filter_invalid_option(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            }
+        ]
+
+        output = StringIO()
+
+        with patch('builtins.input', return_value='X'):
+            with redirect_stdout(output):
+                filter_items(items)
+
+        self.assertIn('Opção inválida.', output.getvalue())
+
+    def test_filter_empty_list(self):
+        items = []
+
+        output = StringIO()
+
+        with redirect_stdout(output):
+            filter_items(items)
+
+        self.assertIn('Sua lista está vazia.', output.getvalue())
 
     def test_invalid_option(self):
         items = [
