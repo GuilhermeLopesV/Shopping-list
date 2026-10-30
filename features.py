@@ -221,6 +221,44 @@ def list_items(items):
     print('-' * 30)
 
 
+def filter_items(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return
+
+    print('\n--- FILTRAR PRODUTOS ---')
+    print('[T] Todos os produtos')
+    print('[P] Produtos pendentes')
+    print('[C] Produtos comprados')
+
+    option = input('Escolha uma opção: ').strip().upper()
+
+    if option == 'T':
+        filtered_items = items
+
+    elif option == 'P':
+        filtered_items = [
+            item for item in items
+            if not item['comprado']
+        ]
+
+    elif option == 'C':
+        filtered_items = [
+            item for item in items
+            if item['comprado']
+        ]
+
+    else:
+        print('Opção inválida.')
+        return
+
+    if not filtered_items:
+        print('Nenhum produto encontrado para esse filtro.')
+        return
+
+    list_items(filtered_items)
+
+
 def command_terminal(option, items):
     if option == 'I':
         return add_item(items)
@@ -239,6 +277,9 @@ def command_terminal(option, items):
 
     elif option == 'L':
         list_items(items)
+
+    elif option == 'F':
+        filter_items(items)
 
     return False
 
