@@ -13,7 +13,8 @@ from features import (
     list_items,
     filter_items,
     command_terminal,
-    calculate_total
+    calculate_total,
+    calculate_pending_total,
 )
 
 
@@ -452,6 +453,77 @@ class TestShoppingList(unittest.TestCase):
         result = calculate_total([])
 
         self.assertEqual(result, Decimal('0.00'))
+
+    def test_calculate_pending_total(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            },
+            {
+                'nome': 'Leite',
+                'quantidade': 3,
+                'comprado': False,
+                'preco': '5.00'
+            }
+        ]
+
+        result = calculate_pending_total(items)
+
+        self.assertEqual(result, Decimal('35.00'))
+
+    def test_calculate_pending_total_all_purchased(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': True,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': True,
+                'preco': '8.50'
+            }
+        ]
+
+        result = calculate_pending_total(items)
+
+        self.assertEqual(result, Decimal('0.00'))
+
+    def test_calculate_pending_total_empty_list(self):
+        result = calculate_pending_total([])
+
+        self.assertEqual(result, Decimal('0.00'))
+
+    def test_calculate_pending_total_all_pending(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': False,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '8.50'
+            }
+        ]
+
+        result = calculate_pending_total(items)
+
+        self.assertEqual(result, Decimal('28.50'))
 
 if __name__ == '__main__':
     unittest.main()
