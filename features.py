@@ -218,6 +218,7 @@ def list_items(items):
 
     print('-' * 30)
     print(f'TOTAL GERAL: R$ {calculate_total(items):.2f}')
+    print(f'TOTAL PENDENTE: R$ {calculate_pending_total(items):.2f}')
     print('-' * 30)
 
 
@@ -291,5 +292,17 @@ def calculate_total(items):
         price = Decimal(item.get('preco', '0.00'))
         subtotal = price * item['quantidade']
         total += subtotal
+
+    return total
+
+
+def calculate_pending_total(items):
+    total = Decimal('0.00')
+
+    for item in items:
+        if not item['comprado']:
+            price = Decimal(item.get('preco', '0.00'))
+            subtotal = price * item['quantidade']
+            total += subtotal
 
     return total
