@@ -15,7 +15,8 @@ from features import (
     command_terminal,
     calculate_total,
     calculate_pending_total,
-    calculate_purchased_total
+    calculate_purchased_total,
+    show_report
 )
 
 
@@ -591,6 +592,49 @@ class TestShoppingList(unittest.TestCase):
 
         self.assertEqual(result, Decimal('28.50'))
 
+    def test_show_report(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': True,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '8.50'
+            },
+            {
+                'nome': 'Leite',
+                'quantidade': 3,
+                'comprado': True,
+                'preco': '5.00'
+            }
+        ]
+
+        output = StringIO()
+
+        with redirect_stdout(output):
+            show_report(items)
+
+        result = output.getvalue()
+
+        self.assertIn('Produtos cadastrados: 3', result)
+        self.assertIn('Produtos comprados: 2', result)
+        self.assertIn('Produtos pendentes: 1', result)
+        self.assertIn('Total geral: R$ 43.50', result)
+        self.assertIn('Total comprado: R$ 35.00', result)
+        self.assertIn('Total pendente: R$ 8.50', result)
+
+    def test_show_report_empty_list(self):
+        output = StringIO()
+
+        with redirect_stdout(output):
+            show_report([])
+
+        self.assertIn('Sua lista está vazia.', output.getvalue())
 
 if __name__ == '__main__':
     unittest.main()
