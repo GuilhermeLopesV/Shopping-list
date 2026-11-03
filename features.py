@@ -282,6 +282,9 @@ def command_terminal(option, items):
     elif option == 'F':
         filter_items(items)
 
+    elif option == 'R':
+        show_report(items)
+
     return False
 
 
@@ -306,3 +309,38 @@ def calculate_pending_total(items):
             total += subtotal
 
     return total
+
+
+def calculate_purchased_total(items):
+    total = Decimal('0.00')
+
+    for item in items:
+        if item['comprado']:
+            price = Decimal(item.get('preco', '0.00'))
+            subtotal = price * item['quantidade']
+            total += subtotal
+
+    return total
+
+
+def show_report(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return
+
+    total = calculate_total(items)
+    purchased = calculate_purchased_total(items)
+    pending = calculate_pending_total(items)
+
+    purchased_count = sum(1 for item in items if item['comprado'])
+    pending_count = sum(1 for item in items if not item['comprado'])
+
+    print('\n--- RELATÓRIO FINANCEIRO ---')
+    print(f'Produtos cadastrados: {len(items)}')
+    print(f'Produtos comprados: {purchased_count}')
+    print(f'Produtos pendentes: {pending_count}')
+    print('-' * 30)
+    print(f'Total geral: R$ {total:.2f}')
+    print(f'Total comprado: R$ {purchased:.2f}')
+    print(f'Total pendente: R$ {pending:.2f}')
+    print('-' * 30)
