@@ -17,17 +17,6 @@ A simple shopping list manager built with **Python** that runs in the terminal. 
 - **JSON** — Data storage and persistence.
 - **Git & GitHub** — Version control and project management.
 
-## 📂 Project Structure
-
-```text
-shopping-list-manager/
-├── main.py
-├── features.py
-└── package_data/
-    ├── data_features.py
-    └── history.json
-```
-
 ## 🚀 Getting Started
 
 ### Prerequisites
