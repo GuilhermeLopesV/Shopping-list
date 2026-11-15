@@ -3,6 +3,8 @@ from unittest.mock import patch
 from io import StringIO
 from contextlib import redirect_stdout
 from decimal import Decimal
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from features import (
     add_item,
@@ -16,7 +18,8 @@ from features import (
     calculate_total,
     calculate_pending_total,
     calculate_purchased_total,
-    show_report
+    show_report,
+    export_report,
 )
 
 
@@ -636,5 +639,55 @@ class TestShoppingList(unittest.TestCase):
 
         self.assertIn('Sua lista está vazia.', output.getvalue())
 
+    def test_export_report(self):
+        items = [
+            {
+                'nome': 'Arroz',
+                'quantidade': 2,
+                'comprado': True,
+                'preco': '10.00'
+            },
+            {
+                'nome': 'Feijão',
+                'quantidade': 1,
+                'comprado': False,
+                'preco': '8.50'
+            }
+        ]
+
+        with TemporaryDirectory() as temp_dir:
+            with patch('features.datetime') as mock_datetime:
+                mock_datetime.now.return_value.strftime.return_value = '14/11/2026 22:00:00'
+                mock_datetime.now.return_value.strftime.side_effect = [
+                    '14/11/2026 22:00:00',
+                    'relatorio_20261114_220000.txt'
+                ]
+
+                with patch('features.Path') as mock_path:
+                    mock_path.return_value.resolve.return_value.parent = Path(temp_dir)
+
+                    result = export_report(items)
+
+            report_file = (
+                Path(temp_dir) / 'reports' /
+                'relatorio_20261114_220000.txt'
+            )
+
+            self.assertTrue(result)
+            self.assertTrue(report_file.exists())
+
+            content = report_file.read_text(encoding='utf-8')
+
+            self.assertIn('Produtos cadastrados: 2', content)
+            self.assertIn('Produtos comprados: 1', content)
+            self.assertIn('Produtos pendentes: 1', content)
+            self.assertIn('Total geral: R$ 28.50', content)
+            self.assertIn('Total comprado: R$ 20.00', content)
+            self.assertIn('Total pendente: R$ 8.50', content)
+
+    def test_export_report_empty_list(self):
+        result = export_report([])
+
+        self.assertFalse(result)
 if __name__ == '__main__':
     unittest.main()
