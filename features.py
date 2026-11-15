@@ -1,4 +1,6 @@
 from decimal import Decimal, InvalidOperation
+from datetime import datetime
+from pathlib import Path
 
 
 def add_item(items):
@@ -285,6 +287,9 @@ def command_terminal(option, items):
     elif option == 'R':
         show_report(items)
 
+    elif option == 'X':
+        return export_report(items)
+
     return False
 
 
@@ -344,3 +349,45 @@ def show_report(items):
     print(f'Total comprado: R$ {purchased:.2f}')
     print(f'Total pendente: R$ {pending:.2f}')
     print('-' * 30)
+
+
+def export_report(items):
+    if not items:
+        print('Sua lista está vazia.')
+        return False
+
+    total = calculate_total(items)
+    purchased = calculate_purchased_total(items)
+    pending = calculate_pending_total(items)
+
+    purchased_count = sum(1 for item in items if item['comprado'])
+    pending_count = sum(1 for item in items if not item['comprado'])
+
+    date = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+    report = (
+        '--- RELATÓRIO FINANCEIRO ---\n'
+        f'Data de geração: {date}\n\n'
+        f'Produtos cadastrados: {len(items)}\n'
+        f'Produtos comprados: {purchased_count}\n'
+        f'Produtos pendentes: {pending_count}\n'
+        '\n'
+        f'Total geral: R$ {total:.2f}\n'
+        f'Total comprado: R$ {purchased:.2f}\n'
+        f'Total pendente: R$ {pending:.2f}\n'
+    )
+
+    reports_dir = Path(__file__).resolve().parent / 'reports'
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    filename = datetime.now().strftime('relatorio_%Y%m%d_%H%M%S.txt')
+    report_path = reports_dir / filename
+
+    try:
+        report_path.write_text(report, encoding='utf-8')
+        print(f'Relatório exportado com sucesso: {report_path}')
+        return True
+
+    except OSError:
+        print('Não foi possível exportar o relatório.')
+        return False
