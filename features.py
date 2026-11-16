@@ -3,6 +3,45 @@ from datetime import datetime
 from pathlib import Path
 
 
+def create_item(items, name, quantity, price):
+    name = name.strip()
+
+    if not name:
+        return False, 'Informe o nome do produto.'
+
+    try:
+        quantity = int(quantity)
+
+        if quantity <= 0:
+            return False, 'A quantidade deve ser maior que zero.'
+
+    except (ValueError, TypeError):
+        return False, 'Digite uma quantidade inteira válida.'
+
+    try:
+        price = Decimal(str(price).strip().replace(',', '.'))
+
+        if not price.is_finite() or price < 0:
+            return False, 'O preço deve ser válido e não negativo.'
+
+        if price.as_tuple().exponent < -2:
+            return False, 'O preço deve ter no máximo duas casas decimais.'
+
+    except (InvalidOperation, ValueError):
+        return False, 'Digite um preço válido.'
+
+    item = {
+        'nome': name.capitalize(),
+        'quantidade': quantity,
+        'comprado': False,
+        'preco': str(price)
+    }
+
+    items.append(item)
+
+    return True, 'Produto adicionado com sucesso!'
+
+
 def add_item(items):
     name = input('Produto para adicionar: ').strip()
 
