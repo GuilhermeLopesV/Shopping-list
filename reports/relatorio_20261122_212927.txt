@@ -1,0 +1,10 @@
+--- RELATÓRIO FINANCEIRO ---
+Data de geração: 22/11/2026 21:29:27
+
+Produtos cadastrados: 1
+Produtos comprados: 0
+Produtos pendentes: 1
+
+Total geral: R$ 0.00
+Total comprado: R$ 0.00
+Total pendente: R$ 0.00

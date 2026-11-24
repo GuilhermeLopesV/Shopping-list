@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from decimal import Decimal
-from features import create_item
+from features import create_item, change_purchased_status
 from package_data.data_features import load_data, save_data
 
 
@@ -232,20 +232,16 @@ class ShoppingListApp(ctk.CTk):
                 )
 
             price = Decimal(item["preco"])
-            status = "Comprado" if item["comprado"] else "Pendente"
 
             values = [
                 item["nome"],
                 str(item["quantidade"]),
-                f"R$ {price:.2f}",
-                status
+                f"R$ {price:.2f}"
             ]
 
+            # Exibir nome, quantidade e preço
             for index, value in enumerate(values):
-                label = ctk.CTkLabel(
-                    row,
-                    text=value
-                )
+                label = ctk.CTkLabel(row, text=value)
                 label.grid(
                     row=0,
                     column=index,
@@ -253,6 +249,38 @@ class ShoppingListApp(ctk.CTk):
                     padx=10,
                     pady=12
                 )
+
+            # Criar caixa de seleção para o status
+            purchased_var = ctk.BooleanVar(
+                value=item["comprado"]
+            )
+
+            checkbox = ctk.CTkCheckBox(
+                row,
+                text="Comprado",
+                variable=purchased_var,
+                command=lambda current=item: self.toggle_item_purchased(current)
+            )
+
+            checkbox.grid(
+                row=0,
+                column=3,
+                padx=10,
+                pady=12
+            )
+
+
+    def toggle_item_purchased(self, item):
+        change_purchased_status(item)
+
+        if not save_data(self.items):
+            # Reverter a alteração caso não consiga salvar
+            change_purchased_status(item)
+            self.refresh_products()
+            return
+
+        self.refresh_products()
+
 
 if __name__ == "__main__":
     app = ShoppingListApp()

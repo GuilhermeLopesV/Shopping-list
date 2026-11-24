@@ -20,6 +20,7 @@ from features import (
     calculate_purchased_total,
     show_report,
     export_report,
+    change_purchased_status
 )
 
 
@@ -274,7 +275,7 @@ class TestShoppingList(unittest.TestCase):
             {'nome': 'Arroz', 'quantidade': 1, 'comprado': False}
         ]
 
-        result = command_terminal('X', items)
+        result = command_terminal('Z', items)
 
         self.assertFalse(result)
         self.assertEqual(len(items), 1)
@@ -689,5 +690,19 @@ class TestShoppingList(unittest.TestCase):
         result = export_report([])
 
         self.assertFalse(result)
+
+    def test_change_purchased_status(self):
+        item = {
+            'nome': 'Arroz',
+            'quantidade': 2,
+            'comprado': False,
+            'preco': '10.00'
+        }
+
+        assert change_purchased_status(item) is True
+        assert item['comprado'] is True
+
+        assert change_purchased_status(item) is False
+        assert item['comprado'] is False
 if __name__ == '__main__':
     unittest.main()

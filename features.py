@@ -236,6 +236,12 @@ def toggle_purchased(items):
         return False
 
 
+
+def change_purchased_status(item):
+    item['comprado'] = not item['comprado']
+    return item['comprado']
+
+
 def list_items(items):
     if not items:
         print('Sua lista está vazia.')

@@ -1,3 +1,46 @@
 {
-    "history": []
+    "history": [
+        {
+            "nome": "Feijão",
+            "quantidade": 20,
+            "comprado": false,
+            "preco": "6.00"
+        },
+        {
+            "nome": "Arroz",
+            "quantidade": 3,
+            "comprado": false,
+            "preco": "10"
+        },
+        {
+            "nome": "Fanta",
+            "quantidade": 2,
+            "comprado": false,
+            "preco": "7.00"
+        },
+        {
+            "nome": "Batata",
+            "quantidade": 7,
+            "comprado": false,
+            "preco": "4.00"
+        },
+        {
+            "nome": "Maça",
+            "quantidade": 2,
+            "comprado": false,
+            "preco": "8.00"
+        },
+        {
+            "nome": "Bolo",
+            "quantidade": 12,
+            "comprado": false,
+            "preco": "5.00"
+        },
+        {
+            "nome": "Banana",
+            "quantidade": 12,
+            "comprado": false,
+            "preco": "15"
+        }
+    ]
 }
